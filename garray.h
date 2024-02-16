@@ -555,9 +555,8 @@ typedef unsigned int garray_index;
                                                                                \
     new_iter->garray = a;                                                      \
     new_iter->index = 0;                                                       \
-    new_iter->valid_index = new_iter->garray->nodes == NULL                    \
-                                ? false                                        \
-                                : ___GARRAY_GET_VALUE_SETTED(a->nodes, 0);     \
+    new_iter->valid_index =                                                    \
+        a->nodes == NULL ? false : ___GARRAY_GET_VALUE_SETTED(a->nodes, 0);    \
                                                                                \
     return new_iter;                                                           \
   }                                                                            \
