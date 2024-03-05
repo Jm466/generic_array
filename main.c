@@ -13,7 +13,7 @@ void print_garray_int(garray_int a)
 
     int defaultv = -1;
 
-    printf("[%i", *garray_int_get_default(a, 0, &defaultv));
+    printf("[%i", *garray_int_at_default(a, 0, &defaultv));
 
     if (garray_int_size(a) == 1) {
         printf("][%i]\n", ___GARRAY_GET_VALUE_SETTED(a->nodes, 0));
@@ -43,6 +43,12 @@ int
 int_descending(int const* left, int const* right)
 {
     return *left - *right;
+}
+
+bool
+even(int const* element)
+{
+    return *element % 2 == 0;
 }
 
 int
@@ -104,6 +110,11 @@ main()
     garray_int_add(ai, 21);
     garray_int_add(ai, 22);
     garray_int_add(ai, 23);
+
+    garray_int int_query = garray_int_query(ai, even);
+    printf("Only even :");
+    print_garray_int(int_query);
+    garray_int_free(int_query);
 
     printf("added three elements: ");
     print_garray_int(ai);
