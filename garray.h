@@ -75,11 +75,13 @@ typedef unsigned int garray_index;
  *
  * Returns an unmodifiable pointer to the first value that matches the
  * condition, NULL if none matches.
- * TYPE const *garray_TYPE_get(garray_TYPE a, bool condition(TYPE const *value))
+ * @param data This value will be passed to condition each time its called
+ * TYPE const *garray_TYPE_get(garray_TYPE a, void* data,
+ *                          bool condition(TYPE const *value, void* data))
  *
  * Returns a new garray that contains all the elements that matches condition.
- * garray_TYPE garray_TYPE_query(garray_TYPE a,
- *                          bool condition(TYPE const *value))
+ * garray_TYPE garray_TYPE_query(garray_TYPE a, void* data
+ *                          bool condition(TYPE const *value, void* data))
  *
  * Sets the value at position, will increment the allocated space for the array
  * if necessary
@@ -147,7 +149,7 @@ typedef unsigned int garray_index;
  * Sets the value a the current iterator position.
  * TYPE *garray_TYPE_iter_set(garray_TYPE_iter iterator, TYPE data);
  *
- * Returns the index of the array in the current position
+ * Returns the index of the array in the current iterator position
  * garray_index garray_TYPE_iter_index(garray_TYPE_iter iterator);
  *
  * Frees the iterator
@@ -176,10 +178,12 @@ typedef unsigned int garray_index;
       DATA_TYPE const *default_value);                                         \
                                                                                \
   DATA_TYPE const *garray_##DATA_TYPE##_get(                                   \
-      garray_##DATA_TYPE a, bool condition(DATA_TYPE const *value));           \
+      garray_##DATA_TYPE a, void *data,                                        \
+      bool condition(DATA_TYPE const *value, void *data));                     \
                                                                                \
   garray_##DATA_TYPE garray_##DATA_TYPE##_query(                               \
-      garray_##DATA_TYPE a, bool condition(DATA_TYPE const *value));           \
+      garray_##DATA_TYPE a, void *data,                                        \
+      bool condition(DATA_TYPE const *value, void *data));                     \
                                                                                \
   garray_index garray_##DATA_TYPE##_size(garray_##DATA_TYPE a);                \
                                                                                \
@@ -660,7 +664,8 @@ typedef unsigned int garray_index;
   }                                                                            \
                                                                                \
   garray_##DATA_TYPE garray_##DATA_TYPE##_query(                               \
-      garray_##DATA_TYPE a, bool condition(DATA_TYPE const *value)) {          \
+      garray_##DATA_TYPE a, void *data,                                        \
+      bool condition(DATA_TYPE const *value, void *data)) {                    \
     garray_##DATA_TYPE new_a = garray_##DATA_TYPE##_new();                     \
     DATA_TYPE const *current = NULL;                                           \
                                                                                \
@@ -669,11 +674,31 @@ typedef unsigned int garray_index;
          garray_##DATA_TYPE##_iter_next(it)) {                                 \
       current = garray_##DATA_TYPE##_iter_get(it);                             \
                                                                                \
-      if (condition(current))                                                  \
+      if (condition(current, data))                                            \
         garray_##DATA_TYPE##_add(new_a, *current);                             \
     }                                                                          \
                                                                                \
     return new_a;                                                              \
+  }                                                                            \
+                                                                               \
+  DATA_TYPE const *garray_##DATA_TYPE##_get(                                   \
+      garray_##DATA_TYPE a, void *data,                                        \
+      bool condition(DATA_TYPE const *value, void *data)) {                    \
+    DATA_TYPE const *current = NULL;                                           \
+                                                                               \
+    for (garray_##DATA_TYPE##_iter it = garray_##DATA_TYPE##_iter_new(a);      \
+         garray_##DATA_TYPE##_iter_condition(it);                              \
+         garray_##DATA_TYPE##_iter_next(it)) {                                 \
+      current = garray_##DATA_TYPE##_iter_get(it);                             \
+                                                                               \
+      if (condition(current, data)) {                                          \
+        garray_##DATA_TYPE##_iter_free(it);                                    \
+        return current;                                                        \
+      }                                                                        \
+    }                                                                          \
+                                                                               \
+    garray_##DATA_TYPE##_iter_free(it);                                        \
+    return NULL;                                                               \
   }
 
 #endif
