@@ -40,23 +40,23 @@ typedef unsigned int garray_index;
  * ! GARRAY_DECLARE(myType)                                   !
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  *
- *  You may use GARRAY_DECLARE(DATA_TYPE) multiple times per time but only once
+ *  You may use GARRAY_DECLARE(DATA_TYPE) multiple times per type but only once
  * per type for GARRAY_IMPLEMENT(DATA_TYPE)
  *
  *
  *
  *  Now follows the documentation for every function in the library, note that
- * the function name changes based on the type; the change always occur as a
+ * the function name changes based on the type; the change always occurs as a
  * sufix in the name. e.g. garray_new -> garray_int_new, garray_char_new, etc.
  * The types garray and garray_iter change also to garray_int_iter and
- * garray_char_iter respectivly. The following documentation assumes that the
+ * garray_char_iter respectively. The following documentation assumes that the
  * type is TYPE.
  *
  *
  * Returns an empty new array of type TYPE
  * garray_TYPE garray_TYPE_new();
  *
- * Same as garray_TYPE_new but the array start with a size of
+ * Same as garray_TYPE_new() but the array start with a size of
  * num_elements_preallocated
  * garray_TYPE garray_TYPE_new_prealocated(garray_index
  * num_elements_preallocated)
@@ -65,11 +65,11 @@ typedef unsigned int garray_index;
  * garray_index garray_TYPE_add(garray_TYPE a, TYPE data);
  *
  * Returns an unmodifiable pointer to the value at position.
- * Returns NULL if positions its outside of bounds or the value is unset.
+ * Returns NULL if position its outside of bounds or the value is unset.
  * TYPE const *garray_TYPE_at(garray_TYPE a, garray_index position);
  *
  * Returns an unmodifiable pointer to the value at position.
- * Returns default if if positions its outside of bounds or the value is unset.
+ * Returns default if if position its outside of bounds or the value is unset.
  * TYPE const *garray_TYPE_at_default(garray_TYPE a, garray_index position,
  * TYPE const *default_value);
  *
@@ -146,7 +146,7 @@ typedef unsigned int garray_index;
  * Returns a pointer to the value at the current iterator position
  * TYPE *garray_TYPE_iter_get(garray_TYPE_iter iterator);
  *
- * Sets the value a the current iterator position.
+ * Sets the value at the current iterator position.
  * TYPE *garray_TYPE_iter_set(garray_TYPE_iter iterator, TYPE data);
  *
  * Returns the index of the array in the current iterator position
