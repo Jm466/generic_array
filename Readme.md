@@ -6,7 +6,7 @@ This library adds the functionaly of generics arrays.
 
 1. [Overview](#overview)
 2. [Documentation](#documentation)
-3. [Implementation details](#Implementation details)
+3. [Implementation details](#Implementation)
 
 ## Overview
 
@@ -38,8 +38,6 @@ Now follows the documentation for every function in the library, note that
 the function name changes based on the type:
 
 `garray_new` → `garray_int_new`, `garray_char_new`, etc.
-
----
 
 The types `garray` and `garray_iter` change also to `garray_int_iter` and
 `garray_char_iter` respectively. The following documentation assumes that the
@@ -256,7 +254,7 @@ void garray_TYPE_iter_free(garray_TYPE_iter_int iterator);
 
 Frees the iterator
 
-## Implementation details
+## Implementation
 
 ### The macros
 
