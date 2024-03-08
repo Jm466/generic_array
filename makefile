@@ -18,7 +18,6 @@ debug : main.c garray.h
 	gcc -save-temps main.c -o debug
 	grep -v '^#.*' debug-main.i > debugP.c
 	sed 's/}/}\n/g' debugP.c | sed 's/;/;\n/g' | sed 's/{/{\n/g' |sed 's/return\n/return /g' debugP.c  > debug.c
-	nvim debug.c -c wq
 	rm -v debug-main.i debug-main.o debug-main.s debug debugP.c || true
 	gcc $(options) debug.c -o debug.bin
 
