@@ -4,9 +4,14 @@ This library adds the functionaly of generics arrays.
 
 ## Table of contents
 
-1. [Overview](#overview)
-2. [Documentation](#documentation)
-3. [Implementation details](#Implementation)
+1. [Usage](#usage)
+2. [Overview](#overview)
+3. [Documentation](#documentation)
+4. [Implementation details](#Implementation)
+
+## Usage
+
+You just copy `garray.h` in your project folder and that is it.
 
 ## Overview
 
