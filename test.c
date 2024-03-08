@@ -46,7 +46,7 @@ int_descending(int const* left, int const* right)
 }
 
 bool
-even(int const* element)
+even(int const* element, void* data)
 {
     return *element % 2 == 0;
 }
@@ -111,7 +111,7 @@ main()
     garray_int_add(ai, 22);
     garray_int_add(ai, 23);
 
-    garray_int int_query = garray_int_query(ai, even);
+    garray_int int_query = garray_int_query(ai, NULL, even);
     printf("Only even :");
     print_garray_int(int_query);
     garray_int_free(int_query);

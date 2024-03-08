@@ -685,8 +685,9 @@ typedef unsigned int garray_index;
       garray_##DATA_TYPE a, void *data,                                        \
       bool condition(DATA_TYPE const *value, void *data)) {                    \
     DATA_TYPE const *current = NULL;                                           \
+    garray_##DATA_TYPE##_iter it;                                              \
                                                                                \
-    for (garray_##DATA_TYPE##_iter it = garray_##DATA_TYPE##_iter_new(a);      \
+    for (it = garray_##DATA_TYPE##_iter_new(a);                                \
          garray_##DATA_TYPE##_iter_condition(it);                              \
          garray_##DATA_TYPE##_iter_next(it)) {                                 \
       current = garray_##DATA_TYPE##_iter_get(it);                             \
