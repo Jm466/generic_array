@@ -88,8 +88,7 @@ typedef unsigned int garray_index;
  * void garray_TYPE_set(garray_TYPE a, garray_index position, TYPE data);
  *
  * Unsets the value at position. When iterating, unsetted values will
- * be ignored. Also garray_TYPE_at() will return NULL when trying to get at a
- * non setted position.
+ * be ignored. Also garray_TYPE_at() aborts if the value is unset
  * void garray_TYPE_remove(garray_TYPE a, garray_index position);
  *
  * Returns the number of elements of the array
@@ -380,10 +379,10 @@ typedef unsigned int garray_index;
   DATA_TYPE const *garray_##DATA_TYPE##_at(garray_##DATA_TYPE a,               \
                                            garray_index position) {            \
     if (position >= a->nodes_allocated << ___GARRAY_LOG_B2_ELEMENTS_PER_NODE)  \
-      return NULL;                                                             \
+      abort();                                                                 \
                                                                                \
     if (!___GARRAY_GET_VALUE_SETTED(a->nodes, position))                       \
-      return NULL;                                                             \
+      abort();                                                                 \
                                                                                \
     return ___garray_get_element##DATA_TYPE(a, position);                      \
   }                                                                            \
@@ -391,9 +390,14 @@ typedef unsigned int garray_index;
   DATA_TYPE const *garray_##DATA_TYPE##_at_default(                            \
       garray_##DATA_TYPE a, garray_index position,                             \
       DATA_TYPE const *default_value) {                                        \
-    DATA_TYPE const *result = garray_##DATA_TYPE##_at(a, position);            \
                                                                                \
-    return result == NULL ? default_value : result;                            \
+    if (position >= a->nodes_allocated << ___GARRAY_LOG_B2_ELEMENTS_PER_NODE)  \
+      return default_value;                                                    \
+                                                                               \
+    if (!___GARRAY_GET_VALUE_SETTED(a->nodes, position))                       \
+      return default_value;                                                    \
+                                                                               \
+    return ___garray_get_element##DATA_TYPE(a, position);                      \
   }                                                                            \
                                                                                \
   void garray_##DATA_TYPE##_set(garray_##DATA_TYPE a, garray_index position,   \
