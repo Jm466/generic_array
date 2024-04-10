@@ -79,7 +79,7 @@ TYPE const *garray_TYPE_at(garray_TYPE a, garray_index position);
 ```
 
 Returns an unmodifiable pointer to the value at `position`.
-Returns aborts the program if `position` its outside of bounds or the value is unset.
+Returns aborts the program if `position` its outside of bounds or the value is uset.
 
 ---
 

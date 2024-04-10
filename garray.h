@@ -88,7 +88,7 @@ typedef unsigned int garray_index;
  * void garray_TYPE_set(garray_TYPE a, garray_index position, TYPE data);
  *
  * Unsets the value at position. When iterating, unsetted values will
- * be ignored. Also garray_TYPE_at() aborts if the value is unset
+ * be ignored. Also garray_TYPE_at() aborts if the value is unse
  * void garray_TYPE_remove(garray_TYPE a, garray_index position);
  *
  * Returns the number of elements of the array
@@ -206,23 +206,25 @@ typedef unsigned int garray_index;
   garray_##DATA_TYPE##_iter garray_##DATA_TYPE##_iter_new(                     \
       garray_##DATA_TYPE a);                                                   \
                                                                                \
-  bool garray_##DATA_TYPE##_iter_condition(                                    \
+  inline bool garray_##DATA_TYPE##_iter_condition(                             \
       garray_##DATA_TYPE##_iter iterator);                                     \
                                                                                \
-  bool garray_##DATA_TYPE##_iter_condition_free(                               \
+  inline bool garray_##DATA_TYPE##_iter_condition_free(                        \
       garray_##DATA_TYPE##_iter iterator);                                     \
                                                                                \
-  void garray_##DATA_TYPE##_iter_next(garray_##DATA_TYPE##_iter iterator);     \
-                                                                               \
-  void garray_##DATA_TYPE##_iter_previous(garray_##DATA_TYPE##_iter iterator); \
-                                                                               \
-  DATA_TYPE const *garray_##DATA_TYPE##_iter_get(                              \
+  inline void garray_##DATA_TYPE##_iter_next(                                  \
       garray_##DATA_TYPE##_iter iterator);                                     \
                                                                                \
-  void garray_##DATA_TYPE##_iter_set(garray_##DATA_TYPE##_iter iterator,       \
-                                     DATA_TYPE data);                          \
+  inline void garray_##DATA_TYPE##_iter_previous(                              \
+      garray_##DATA_TYPE##_iter iterator);                                     \
                                                                                \
-  garray_index garray_##DATA_TYPE##_iter_index(                                \
+  inline DATA_TYPE const *garray_##DATA_TYPE##_iter_get(                       \
+      garray_##DATA_TYPE##_iter iterator);                                     \
+                                                                               \
+  inline void garray_##DATA_TYPE##_iter_set(                                   \
+      garray_##DATA_TYPE##_iter iterator, DATA_TYPE data);                     \
+                                                                               \
+  inline garray_index garray_##DATA_TYPE##_iter_index(                         \
       garray_##DATA_TYPE##_iter iterator);                                     \
                                                                                \
   void garray_##DATA_TYPE##_iter_free(garray_##DATA_TYPE##_iter iterator);
@@ -585,7 +587,7 @@ typedef unsigned int garray_index;
     return new_iter;                                                           \
   }                                                                            \
                                                                                \
-  bool garray_##DATA_TYPE##_iter_condition(                                    \
+  inline bool garray_##DATA_TYPE##_iter_condition(                             \
       garray_##DATA_TYPE##_iter iterator) {                                    \
     return iterator->valid_index;                                              \
   }                                                                            \
@@ -594,7 +596,7 @@ typedef unsigned int garray_index;
     free(iterator);                                                            \
   }                                                                            \
                                                                                \
-  bool garray_##DATA_TYPE##_iter_condition_free(                               \
+  inline bool garray_##DATA_TYPE##_iter_condition_free(                        \
       garray_##DATA_TYPE##_iter iterator) {                                    \
     if (garray_##DATA_TYPE##_iter_condition(iterator))                         \
       return true;                                                             \
@@ -603,7 +605,8 @@ typedef unsigned int garray_index;
     return false;                                                              \
   }                                                                            \
                                                                                \
-  void garray_##DATA_TYPE##_iter_next(garray_##DATA_TYPE##_iter iterator) {    \
+  inline void garray_##DATA_TYPE##_iter_next(                                  \
+      garray_##DATA_TYPE##_iter iterator) {                                    \
     while (++iterator->index < iterator->garray->nodes_allocated               \
                                    << ___GARRAY_LOG_B2_ELEMENTS_PER_NODE) {    \
       if (___GARRAY_GET_VALUE_SETTED(iterator->garray->nodes,                  \
@@ -616,7 +619,7 @@ typedef unsigned int garray_index;
     iterator->valid_index = false;                                             \
   }                                                                            \
                                                                                \
-  void garray_##DATA_TYPE##_iter_previous(                                     \
+  inline void garray_##DATA_TYPE##_iter_previous(                              \
       garray_##DATA_TYPE##_iter iterator) {                                    \
                                                                                \
     /* index has an offset of +1, so that when it reaches 0 that would be -1,  \
@@ -632,18 +635,18 @@ typedef unsigned int garray_index;
     iterator->valid_index = false;                                             \
   }                                                                            \
                                                                                \
-  DATA_TYPE const *garray_##DATA_TYPE##_iter_get(                              \
+  inline DATA_TYPE const *garray_##DATA_TYPE##_iter_get(                       \
       garray_##DATA_TYPE##_iter iterator) {                                    \
     return ___garray_get_element##DATA_TYPE(iterator->garray,                  \
                                             iterator->index);                  \
   }                                                                            \
                                                                                \
-  void garray_##DATA_TYPE##_iter_set(garray_##DATA_TYPE##_iter iterator,       \
-                                     DATA_TYPE data) {                         \
+  inline void garray_##DATA_TYPE##_iter_set(                                   \
+      garray_##DATA_TYPE##_iter iterator, DATA_TYPE data) {                    \
     garray_##DATA_TYPE##_set(iterator->garray, iterator->index, data);         \
   }                                                                            \
                                                                                \
-  garray_index garray_##DATA_TYPE##_iter_index(                                \
+  inline garray_index garray_##DATA_TYPE##_iter_index(                         \
       garray_##DATA_TYPE##_iter iterator) {                                    \
     return iterator->index;                                                    \
   }                                                                            \
