@@ -345,8 +345,8 @@ typedef unsigned int garray_index;
     return true;                                                               \
   }                                                                            \
                                                                                \
-  static DATA_TYPE *___garray_get_element##DATA_TYPE(garray_##DATA_TYPE a,     \
-                                                     garray_index position) {  \
+  DATA_TYPE *___garray_get_element##DATA_TYPE(garray_##DATA_TYPE a,            \
+                                              garray_index position) {         \
     return &a->nodes[position >> ___GARRAY_LOG_B2_ELEMENTS_PER_NODE]           \
                 .elements[position % ___GARRAY_ELEMENTS_PER_NODE];             \
   }                                                                            \
