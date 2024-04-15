@@ -246,10 +246,20 @@ Sets the value at the current iterator position.
 ---
 
 ```c
-garray_index garray_TYPE_iter_index(garray_TYPE_iter iterator);
+garray_index garray_TYPE_iter_get_index(garray_TYPE_iter iterator);
 ```
 
 Returns the index of the array in the current iterator position
+
+---
+
+```c
+garray_index garray_TYPE_iter_set_index(garray_TYPE_iter iterator, garray_index index);
+```
+
+Sets the iterator position to `index`
+
+Returns `true` if the index was setted, `false` otherwise
 
 ---
 

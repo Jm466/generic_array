@@ -1,7 +1,6 @@
 #include "garray.h"
 #include <stdio.h>
 
-GARRAY_IMPLEMENT(double)
 GARRAY_IMPLEMENT(int)
 
 void print_garray_int(garray_int a)
@@ -55,7 +54,6 @@ int
 main()
 {
     garray_int ai = garray_int_new();
-    garray_double ad = garray_double_new();
 
     garray_int_add(ai, 0);
     garray_int_add(ai, 1);
@@ -68,18 +66,6 @@ main()
     garray_int_add(ai, 8);
     garray_int_add(ai, 9);
     printf("Array int -> Size:%i Allocated:%i\n", ai->num_elements, ai->nodes_allocated);
-
-    garray_double_add(ad, 0);
-    garray_double_add(ad, 1);
-    garray_double_add(ad, 2);
-    garray_double_add(ad, 3);
-    garray_double_add(ad, 4);
-    garray_double_add(ad, 5);
-    garray_double_add(ad, 6);
-    garray_double_add(ad, 7);
-    garray_double_add(ad, 8);
-    garray_double_add(ad, 9);
-    printf("Array double -> Size:%i Allocated:%i\n", ad->num_elements, ad->nodes_allocated);
 
     print_garray_int(ai);
 
@@ -131,7 +117,6 @@ main()
     print_garray_int(ai);
 
     garray_int_free(ai);
-    garray_double_free(ad);
 
     garray_int a = garray_int_new();
 
