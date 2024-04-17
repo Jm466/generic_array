@@ -231,7 +231,7 @@ typedef unsigned int garray_index;
   garray_index garray_##DATA_TYPE##_iter_get_index(                            \
       garray_##DATA_TYPE##_iter iterator);                                     \
                                                                                \
-  void garray_##DATA_TYPE##_iter_set_index(garray_##DATA_TYPE##_iter iterator, \
+  bool garray_##DATA_TYPE##_iter_set_index(garray_##DATA_TYPE##_iter iterator, \
                                            garray_index index);                \
                                                                                \
   void garray_##DATA_TYPE##_iter_free(garray_##DATA_TYPE##_iter iterator);

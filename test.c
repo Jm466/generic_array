@@ -1,6 +1,7 @@
 #include "garray.h"
 #include <stdio.h>
 
+GARRAY_DECLARE(int)
 GARRAY_IMPLEMENT(int)
 
 void print_garray_int(garray_int a)
