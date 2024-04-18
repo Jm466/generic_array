@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define GARRAY_VERSION 1.0
+#define GARRAY_VERSION 1.1
 
 // Type used to index the values of the array
 //
@@ -60,7 +60,7 @@ typedef unsigned int garray_index;
  *
  * Same as garray_TYPE_new() but the array start with a size of
  * num_elements_preallocated
- * garray_TYPE garray_TYPE_new_prealocated(garray_index
+ * garray_TYPE garray_TYPE_new_preallocated(garray_index
  * num_elements_preallocated)
  *
  * Appends an element to the array
@@ -104,11 +104,12 @@ typedef unsigned int garray_index;
  * to the number of elements in the array
  * void garray_TYPE_collapse(garray_TYPE a);
  *
- * Collapses and sorts the array according to criteria
+ * Returns a collapsed and sorted version of the input array according to
+ * criteria
  * `criteria` == 0: None is before the other
  * `criteria` > 0: Left is before right
  * `criteria` < 0: Left is after right
- * void garray_TYPE_sort(garray_TYPE a,
+ * garray_TYPE garray_TYPE_sort(garray_TYPE a,
  *                      int criteria(TYPE const *left, TYPE const *right));
  *
  * Returns true if value is contained in the array, according to comparator
@@ -170,7 +171,7 @@ typedef unsigned int garray_index;
                                                                                \
   garray_##DATA_TYPE garray_##DATA_TYPE##_new();                               \
                                                                                \
-  garray_##DATA_TYPE garray_##DATA_TYPE##_new_prealocated(                     \
+  garray_##DATA_TYPE garray_##DATA_TYPE##_new_preallocated(                    \
       garray_index num_elements_preallocated);                                 \
                                                                                \
   garray_index garray_##DATA_TYPE##_add(garray_##DATA_TYPE a, DATA_TYPE data); \
@@ -199,7 +200,7 @@ typedef unsigned int garray_index;
                                                                                \
   void garray_##DATA_TYPE##_collapse(garray_##DATA_TYPE a);                    \
                                                                                \
-  void garray_##DATA_TYPE##_sort(                                              \
+  garray_##DATA_TYPE garray_##DATA_TYPE##_sort(                                \
       garray_##DATA_TYPE a,                                                    \
       int criteria(DATA_TYPE const *, DATA_TYPE const *));                     \
                                                                                \
@@ -299,17 +300,21 @@ typedef unsigned int garray_index;
     return garray;                                                             \
   }                                                                            \
                                                                                \
-  garray_##DATA_TYPE garray_##DATA_TYPE##_new_prealocated(                     \
-      garray_index num_elements_prealocated) {                                 \
+  garray_##DATA_TYPE garray_##DATA_TYPE##_new_preallocated(                    \
+      garray_index num_elements_preallocated) {                                \
     garray_##DATA_TYPE a = garray_##DATA_TYPE##_new();                         \
                                                                                \
     a->nodes_allocated =                                                       \
-        num_elements_prealocated >> ___GARRAY_LOG_B2_ELEMENTS_PER_NODE;        \
+        num_elements_preallocated >> ___GARRAY_LOG_B2_ELEMENTS_PER_NODE;       \
+                                                                               \
+    if (num_elements_preallocated % ___GARRAY_ELEMENTS_PER_NODE > 0)           \
+      a->nodes_allocated++;                                                    \
+                                                                               \
     a->nodes = calloc(a->nodes_allocated,                                      \
                       sizeof(struct ___generic_garray_node_##DATA_TYPE));      \
                                                                                \
     if (a->nodes == NULL) {                                                    \
-      perror("garray_" #DATA_TYPE "_new_prealocated(): calloc\n");             \
+      perror("garray_" #DATA_TYPE "_new_preallocated(): calloc\n");            \
       abort();                                                                 \
     }                                                                          \
                                                                                \
@@ -442,8 +447,8 @@ typedef unsigned int garray_index;
                                                                                \
   garray_##DATA_TYPE garray_##DATA_TYPE##_clone(garray_##DATA_TYPE a) {        \
                                                                                \
-    garray_##DATA_TYPE new_a =                                                 \
-        garray_##DATA_TYPE##_new_prealocated(a->nodes_allocated);              \
+    garray_##DATA_TYPE new_a = garray_##DATA_TYPE##_new_preallocated(          \
+        a->nodes_allocated * ___GARRAY_ELEMENTS_PER_NODE);                     \
                                                                                \
     new_a->nodes_allocated = a->nodes_allocated;                               \
     new_a->num_elements = a->num_elements;                                     \
@@ -550,21 +555,61 @@ typedef unsigned int garray_index;
            right_size * sizeof(DATA_TYPE)); /*Right array*/                    \
   }                                                                            \
                                                                                \
-  void garray_##DATA_TYPE##_sort(                                              \
+  garray_##DATA_TYPE garray_##DATA_TYPE##_sort(                                \
       garray_##DATA_TYPE a,                                                    \
       int criteria(DATA_TYPE const *, DATA_TYPE const *)) {                    \
-    garray_##DATA_TYPE##_collapse(a);                                          \
+    a = garray_##DATA_TYPE##_clone(a);                                         \
                                                                                \
-    DATA_TYPE array[a->num_elements];                                          \
+    if (a->num_elements < 3) {                                                 \
+      garray_##DATA_TYPE##_collapse(a);                                        \
                                                                                \
-    for (garray_index i = 0; i < a->num_elements; i++) {                       \
-      array[i] = *___garray_get_element##DATA_TYPE(a, i);                      \
+      DATA_TYPE array[a->num_elements];                                        \
+                                                                               \
+      for (garray_index i = 0; i < a->num_elements; i++) {                     \
+        array[i] = *___garray_get_element##DATA_TYPE(a, i);                    \
+      }                                                                        \
+      ___garray_sort_recursive##DATA_TYPE(a->num_elements, array, criteria);   \
+                                                                               \
+      for (garray_index i = 0; i < a->num_elements; i++) {                     \
+        *___garray_get_element##DATA_TYPE(a, i) = array[i];                    \
+      }                                                                        \
+      return a;                                                                \
     }                                                                          \
-    ___garray_sort_recursive##DATA_TYPE(a->num_elements, array, criteria);     \
+    DATA_TYPE left_array[a->num_elements], right_array[a->num_elements];       \
+    garray_index left_size = 0, right_size = 0, elements = 0, pivot_position;  \
+    DATA_TYPE *pivot;                                                          \
                                                                                \
-    for (garray_index i = 0; i < a->num_elements; i++) {                       \
-      *___garray_get_element##DATA_TYPE(a, i) = array[i];                      \
+    for (garray_index i = 0;; i++) {                                           \
+      if (___GARRAY_GET_VALUE_SETTED(a->nodes, i)) {                           \
+        pivot_position = i;                                                    \
+        pivot = ___garray_get_element##DATA_TYPE(a, i);                        \
+        break;                                                                 \
+      }                                                                        \
     }                                                                          \
+                                                                               \
+    /* We skipt the first one because it is the pivot */                       \
+    for (garray_index i = pivot_position + 1; elements - 1 < a->num_elements;  \
+         i++) {                                                                \
+      if (!___GARRAY_GET_VALUE_SETTED(a->nodes, i))                            \
+        continue;                                                              \
+      elements++;                                                              \
+      if (criteria(___garray_get_element##DATA_TYPE(a, i), pivot) > 0)         \
+        left_array[left_size++] = *___garray_get_element##DATA_TYPE(a, i);     \
+      else                                                                     \
+        right_array[right_size++] = *___garray_get_element##DATA_TYPE(a, i);   \
+    }                                                                          \
+    ___garray_sort_recursive##DATA_TYPE(left_size, left_array, criteria);      \
+    ___garray_sort_recursive##DATA_TYPE(right_size, right_array, criteria);    \
+                                                                               \
+    for (elements = 0; elements < left_size; elements++)                       \
+      *___garray_get_element##DATA_TYPE(a, elements) = left_array[elements];   \
+                                                                               \
+    *___garray_get_element##DATA_TYPE(a, elements++) = *pivot;                 \
+                                                                               \
+    for (; elements < right_size; elements++)                                  \
+      *___garray_get_element##DATA_TYPE(a, elements) = right_array[elements];  \
+                                                                               \
+    return a;                                                                  \
   }                                                                            \
                                                                                \
   void garray_##DATA_TYPE##_free(garray_##DATA_TYPE a) {                       \

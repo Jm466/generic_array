@@ -59,7 +59,7 @@ Returns an empty new array of type `TYPE`
 ---
 
 ```c
-garray_TYPE garray_TYPE_new_prealocated(garray_index num_elements_preallocated)
+garray_TYPE garray_TYPE_new_preallocated(garray_index num_elements_preallocated)
 ```
 
 Same as `garray_TYPE_new()` but the array start with a size of `num_elements_preallocated`
@@ -154,10 +154,10 @@ to the number of elements in the array
 ---
 
 ```c
-void garray_TYPE_sort(garray_TYPE a, int criteria(TYPE const *left, TYPE const *right));
+garray_TYPE garray_TYPE_sort(garray_TYPE a, int criteria(TYPE const *left, TYPE const *right));
 ```
 
-Collapses and sorts the array according to criteria
+Returns a collapsed and sorted version of the input array according to criteria
 `criteria` == 0: None is before the other
 `criteria` > 0: Left is before right
 `criteria` < 0: Left is after right

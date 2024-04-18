@@ -54,7 +54,7 @@ even(int const* element, void* data)
 int
 main()
 {
-    garray_int ai = garray_int_new();
+    garray_int ai_s, ai = garray_int_new();
 
     garray_int_add(ai, 0);
     garray_int_add(ai, 1);
@@ -82,15 +82,24 @@ main()
     printf("removed: ");
     print_garray_int(ai);
 
-    garray_int_sort(ai, int_ascending);
+    garray_int ai2 = garray_int_clone(ai);
+    garray_int_free(ai2);
+
+    ai_s = ai;
+    ai = garray_int_sort(ai, int_ascending);
+    garray_int_free(ai_s);
     printf("sorted ascending: ");
     print_garray_int(ai);
 
-    garray_int_sort(ai, int_descending);
+    ai_s = ai;
+    ai = garray_int_sort(ai, int_descending);
+    garray_int_free(ai_s);
     printf("sorted descending: ");
     print_garray_int(ai);
 
-    garray_int_sort(ai, int_ascending);
+    ai_s = ai;
+    ai = garray_int_sort(ai, int_ascending);
+    garray_int_free(ai_s);
     printf("sorted ascending: ");
     print_garray_int(ai);
 

@@ -6,7 +6,7 @@ options = 	-std=c17\
 			-fsanitize=address\
 			-fsanitize=bounds\
 			-fsanitize=null\
-			-g\
+			-ggdb\
 			-O0
 
 compile : test.c garray.h
