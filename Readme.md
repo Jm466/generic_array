@@ -79,7 +79,7 @@ TYPE const *garray_TYPE_at(garray_TYPE a, garray_index position);
 ```
 
 Returns an unmodifiable pointer to the value at `position`.
-Returns aborts the program if `position` its outside of bounds or the value is uset.
+Aborts the program if `position` its outside of bounds or the value is uset.
 
 ---
 
@@ -93,7 +93,7 @@ Returns `default` if if `position` its outside of bounds or the value is unset.
 ---
 
 ```c
-TYPE const _garray_TYPE_get(garray_TYPE a, void *data, bool condition(TYPE const _value, void_ data))
+TYPE const *garray_TYPE_get(garray_TYPE a, void *data, bool condition(TYPE const _value, void_ data))
 ```
 
 Returns an unmodifiable pointer to the first value that matches `condition`, `NULL` if none matches.
@@ -159,8 +159,8 @@ garray_TYPE garray_TYPE_sort(garray_TYPE a, int criteria(TYPE const *left, TYPE 
 
 Returns a collapsed and sorted version of the input array according to criteria
 `criteria` == 0: None is before the other
-`criteria` > 0: Left is before right
-`criteria` < 0: Left is after right
+`criteria` > 0: Left is after right(right<left)
+`criteria` < 0: Left is before right(left<right)
 
 ---
 
@@ -230,7 +230,7 @@ Recedes the iterator to the previous available value
 ---
 
 ```c
-TYPE *garray_TYPE_iter_get(garray_TYPE_iter iterator);
+TYPE const *garray_TYPE_iter_get(garray_TYPE_iter iterator);
 ```
 
 Returns a pointer to the value at the current iterator position
@@ -238,7 +238,7 @@ Returns a pointer to the value at the current iterator position
 ---
 
 ```c
-TYPE *garray_TYPE_iter_set(garray_TYPE_iter iterator, TYPE data);
+void garray_TYPE_iter_set(garray_TYPE_iter iterator, TYPE data);
 ```
 
 Sets the value at the current iterator position.

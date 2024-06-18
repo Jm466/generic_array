@@ -2,22 +2,22 @@ options = 	-std=c17\
 			-Wall\
 			-Wextra\
 			-pedantic\
-			-fanalyzer\
-			-fsanitize=address\
-			-fsanitize=bounds\
-			-fsanitize=null\
+			-Wno-unused-parameter\
+			-Wno-unused-function\
 			-ggdb\
 			-O0
 
-compile : test.c garray.h
+fanalyzer = -fanalyzer\
+			-fsanitize=address\
+			-fsanitize=bounds\
+			-fsanitize=null\
+			-fsanitize=pointer-compare\
+			-fsanitize=pointer-subtract\
+			-fsanitize=leak\
+			-fsanitize=undefined
+
+normal : test.c garray.h garray.c
 	gcc $(options) test.c -o test
 
-debug : test.c garray.h
-	gcc -save-temps test.c -o debug || true
-	grep -v '^#.*' debug-test.i > debugP.c
-	sed 's/}/}\n/g' debugP.c | sed 's/;/;\n/g' | sed 's/{/{\n/g' |sed 's/return\n/return /g' > debug.c
-	rm -v debug-test.i debug-test.o debug-test.s debug debugP.c || true
-	gcc $(options) debug.c -o debug.bin
-
-clean:
-	rm -v debug.bin debug.c test || true
+analyzer : test.c garray.h garray.c
+	gcc $(options) $(fanalyzer) test.c -o test-analyzer

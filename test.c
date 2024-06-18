@@ -1,5 +1,7 @@
-#include "garray.h"
 #include <stdio.h>
+
+#include "garray.c"
+#include "garray.h"
 
 GARRAY_DECLARE(int)
 GARRAY_IMPLEMENT(int)
@@ -16,19 +18,21 @@ void print_garray_int(garray_int a)
     printf("[%i", *garray_int_at_default(a, 0, &defaultv));
 
     if (garray_int_size(a) == 1) {
-        printf("][%i]\n", ___GARRAY_GET_VALUE_SETTED(a->nodes, 0));
+        printf("][%i]\n", GARRAY_GET_VALUE_SETTED(a, 0));
         return;
     }
 
     garray_int_iter it = garray_int_iter_new(a);
 
-    for (garray_int_iter_next(it); garray_int_iter_condition_free(it); garray_int_iter_next(it))
+    for (garray_int_iter_next(it); garray_int_iter_condition_free(it);
+         garray_int_iter_next(it))
         printf(", %i", *garray_int_iter_get(it));
 
     printf("][");
 
-    for (garray_index i = 0; i < a->nodes_allocated * ___GARRAY_ELEMENTS_PER_NODE; i++)
-        printf("%i", ___GARRAY_GET_VALUE_SETTED(a->nodes, i) ? 1 : 0);
+    for (garray_index i = 0; i < a->bytes_allocated / a->element_size;
+         i++)
+        printf("%i", GARRAY_GET_VALUE_SETTED(a, i) ? 1 : 0);
 
     printf("]\n");
 }
@@ -36,13 +40,13 @@ void print_garray_int(garray_int a)
 int
 int_ascending(int const* left, int const* right)
 {
-    return *right - *left;
+    return *left - *right;
 }
 
 int
 int_descending(int const* left, int const* right)
 {
-    return *left - *right;
+    return *right - *left;
 }
 
 bool
@@ -66,7 +70,8 @@ main()
     garray_int_add(ai, 7);
     garray_int_add(ai, 8);
     garray_int_add(ai, 9);
-    printf("Array int -> Size:%i Allocated:%i\n", ai->num_elements, ai->nodes_allocated);
+    printf("Array int -> Size:%i Allocated:%i\n", ai->num_elements,
+           ai->bytes_allocated);
 
     print_garray_int(ai);
 
@@ -108,7 +113,7 @@ main()
     garray_int_add(ai, 23);
 
     garray_int int_query = garray_int_query(ai, NULL, even);
-    printf("Only even :");
+    printf("only even: ");
     print_garray_int(int_query);
     garray_int_free(int_query);
 
