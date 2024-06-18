@@ -275,7 +275,7 @@ Frees the iterator
 
 The `GARRAY_DECLARE()` macro just expands to types and function declarations,
 wich allows you to use it as much as you want throughtout the code, because there is
-no actuall function implementation.
+no actual function implementation.
 
 On the other hand, `GARRAY_IMPLEMENT` expands to the types and function declaration for
 that type, calling this macro multiple times would cause a linker error, because you would
@@ -283,19 +283,16 @@ be redefining already declared functions.
 
 ### Data layout
 
-The generic array itself is an array of `___generic_garray_node_DATA_TYPE`, defined as the following:
+The generic array itself is pointer to a struct that contains the following fields:
 
 ```c
-struct ___generic_garray_node_TYPE {
-    uint8_t values_setted;
-    TYPE elements[___GARRAY_ELEMENTS_PER_NODE];
-  };
+struct generic_array {
+    garray_index bytes_allocated; //Total number of bytes allocated for the array
+    garray_index bytes_allocated_values_setted; // Total number of bytes allocated for values_setted
+    garray_index num_elements; //Total number of elements inside the array
+    garray_index next_free; //The index of the next free element
+    garray_index element_size; //The size of each element in bytes
+    int8_t* values_setted; //An array of bytes that stores whether an element is set or not for each element
+    int8_t* array;
+};
 ```
-
-Being `___GARRAY_ELEMENTS_PER_NODE` defined as 8
-
----
-
-`values_setted` is a byte that contains in binary wich values of the node are setted;
-that way the information about the state of a node is close to the value that holds the node,
-so that the processor cache may take advantage of spacial locality
