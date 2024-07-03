@@ -21,15 +21,22 @@
     (((garray)->values_setted[(position) >> LOG_B2_ELEMENTS_PER_NODE]) & \
      (1u << ((position) % ELEMENTS_PER_NODE)))
 
-static void* TMP_PTR;
-#define REALLOC(ptr, new_size, error_message) {\
-        TMP_PTR = ptr; \
-        if((ptr = realloc(ptr, new_size)) == NULL) { \
-            perror(error_message); \
-            free(TMP_PTR); \
-            abort(); \
-        }\
+static inline void*
+safe_realloc(void* ptr, size_t new_size, char error_message[])
+{
+    void* tmp_ptr = ptr;
+
+    if ((ptr = realloc(ptr, new_size)) == NULL) {
+        perror(error_message);
+
+        if (tmp_ptr != NULL)
+            free(tmp_ptr);
+
+        abort();
     }
+
+    return ptr;
+}
 
 typedef int8_t* array_t;
 
@@ -110,7 +117,7 @@ check_resizing(garray a)
         }
     }
 
-    REALLOC(a->array, a->bytes_allocated, "check_resizing(): realloc 1\n");
+    a->array = safe_realloc(a->array, a->bytes_allocated, "check_resizing(): realloc 1\n");
 
     memset(a->array + previous_allocation, 0, a->bytes_allocated - previous_allocation);
 
@@ -124,7 +131,8 @@ check_resizing(garray a)
     if (a->bytes_allocated_values_setted == previous_allocation_values) //If a->values_setted need not allocation finish
         return true;
 
-    REALLOC(a->values_setted, a->bytes_allocated, "check_resizing(): realloc 2\n");
+    a->values_setted = safe_realloc(a->values_setted, VALUES_SETTED_SIZE(a->bytes_allocated),
+                                    "check_resizing(): realloc 2\n");
 
     memset(a->values_setted + previous_allocation_values, 0,
            VALUES_SETTED_SIZE(a->bytes_allocated - previous_allocation));
@@ -275,7 +283,7 @@ collapse_break_loop :;
         free(a->array);
         a->array = NULL;
     } else
-        REALLOC(a->array, a->bytes_allocated, "___garray_collapse(): realloc\n");
+        a->array = safe_realloc(a->array, a->bytes_allocated, "___garray_collapse(): realloc\n");
 }
 
 garray
