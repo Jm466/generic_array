@@ -66,19 +66,19 @@ typedef unsigned int garray_index;
  * Appends an element to the array
  * garray_index garray_TYPE_add(garray_TYPE a, TYPE data);
  *
- * Returns an unmodifiable pointer to the value at position.
+ * Returns a pointer to the value at position.
  * Returns NULL if position its outside of bounds or the value is unset.
- * TYPE const *garray_TYPE_at(garray_TYPE a, garray_index position);
+ * TYPE *garray_TYPE_at(garray_TYPE a, garray_index position);
  *
- * Returns an unmodifiable pointer to the value at position.
+ * Returns a pointer to the value at position.
  * Returns default if if position its outside of bounds or the value is unset.
- * TYPE const *garray_TYPE_at_default(garray_TYPE a, garray_index position,
- * TYPE const *default_value);
+ * TYPE *garray_TYPE_at_default(garray_TYPE a, garray_index position,
+ * TYPE *default_value);
  *
- * Returns an unmodifiable pointer to the first value that matches the
+ * Returns a pointer to the first value that matches the
  * condition, NULL if none matches.
  * @param data This value will be passed to condition each time its called
- * TYPE const *garray_TYPE_get(garray_TYPE a, void* data,
+ * TYPE *garray_TYPE_get(garray_TYPE a, void* data,
  *                          bool condition(TYPE const *value, void* data))
  *
  * Returns a new garray that contains all the elements that matches condition.
@@ -178,14 +178,13 @@ typedef struct generic_array_iterator *garray_iter;
                                                                                \
   garray_index garray_##DATA_TYPE##_add(garray_##DATA_TYPE a, DATA_TYPE data); \
                                                                                \
-  DATA_TYPE const *garray_##DATA_TYPE##_at(garray_##DATA_TYPE a,               \
-                                           garray_index position);             \
+  DATA_TYPE *garray_##DATA_TYPE##_at(garray_##DATA_TYPE a,                     \
+                                     garray_index position);                   \
                                                                                \
-  DATA_TYPE const *garray_##DATA_TYPE##_at_default(                            \
-      garray_##DATA_TYPE a, garray_index position,                             \
-      DATA_TYPE const *default_value);                                         \
+  DATA_TYPE *garray_##DATA_TYPE##_at_default(                                  \
+      garray_##DATA_TYPE a, garray_index position, DATA_TYPE *default_value);  \
                                                                                \
-  DATA_TYPE const *garray_##DATA_TYPE##_get(                                   \
+  DATA_TYPE *garray_##DATA_TYPE##_get(                                         \
       garray_##DATA_TYPE a, void *data,                                        \
       bool condition(DATA_TYPE const *value, void *data));                     \
                                                                                \
@@ -225,7 +224,7 @@ typedef struct generic_array_iterator *garray_iter;
                                                                                \
   void garray_##DATA_TYPE##_iter_previous(garray_##DATA_TYPE##_iter iterator); \
                                                                                \
-  DATA_TYPE const *garray_##DATA_TYPE##_iter_get(                              \
+  DATA_TYPE *garray_##DATA_TYPE##_iter_get(                                    \
       garray_##DATA_TYPE##_iter iterator);                                     \
                                                                                \
   void garray_##DATA_TYPE##_iter_set(garray_##DATA_TYPE##_iter iterator,       \
@@ -247,10 +246,10 @@ typedef struct generic_array_iterator *garray_iter;
   garray ___garray_new(garray_index element_size);                             \
   garray ___garray_new_preallocated(garray_index num_elements_preallocated,    \
                                     garray_index element_size);                \
-  garray_index ___garray_add(garray a, const void *data);                      \
-  const void *___garray_at(garray a, garray_index position);                   \
-  const void *___garray_at_default(garray a, garray_index position,            \
-                                   const void *default_value);                 \
+  garray_index ___garray_add(garray a, void *data);                            \
+  void *___garray_at(garray a, garray_index position);                         \
+  void *___garray_at_default(garray a, garray_index position,                  \
+                             void *default_value);                             \
   void ___garray_set(garray a, garray_index position,                          \
                      const void *restrict data);                               \
   void ___garray_remove(garray a, garray_index position);                      \
@@ -265,7 +264,7 @@ typedef struct generic_array_iterator *garray_iter;
   bool ___garray_iter_condition_free(garray_iter iterator);                    \
   void ___garray_iter_next(garray_iter iterator);                              \
   void ___garray_iter_previous(garray_iter iterator);                          \
-  void const *___garray_iter_get(garray_iter iterator);                        \
+  void *___garray_iter_get(garray_iter iterator);                              \
   void ___garray_iter_set(garray_iter iterator, const void *data);             \
   garray_index ___garray_iter_get_index(garray_iter iterator);                 \
   bool ___garray_iter_set_index(garray_iter iterator, garray_index index);     \
@@ -274,8 +273,8 @@ typedef struct generic_array_iterator *garray_iter;
       bool comparator(void const *left, void const *right));                   \
   garray ___garray_query(garray a, void *data,                                 \
                          bool condition(void const *value, void *data));       \
-  void const *___garray_get(garray a, void *data,                              \
-                            bool condition(void const *value, void *data));    \
+  void *___garray_get(garray a, void *data,                                    \
+                      bool condition(void const *value, void *data));          \
                                                                                \
   extern inline garray_##DATA_TYPE garray_##DATA_TYPE##_new() {                \
     return ___garray_new(sizeof(DATA_TYPE));                                   \
@@ -292,14 +291,13 @@ typedef struct generic_array_iterator *garray_iter;
     return ___garray_add(a, &data);                                            \
   }                                                                            \
                                                                                \
-  extern inline DATA_TYPE const *garray_##DATA_TYPE##_at(                      \
-      garray_##DATA_TYPE a, garray_index position) {                           \
+  extern inline DATA_TYPE *garray_##DATA_TYPE##_at(garray_##DATA_TYPE a,       \
+                                                   garray_index position) {    \
     return ___garray_at(a, position);                                          \
   }                                                                            \
                                                                                \
-  extern inline DATA_TYPE const *garray_##DATA_TYPE##_at_default(              \
-      garray_##DATA_TYPE a, garray_index position,                             \
-      DATA_TYPE const *default_value) {                                        \
+  extern inline DATA_TYPE *garray_##DATA_TYPE##_at_default(                    \
+      garray_##DATA_TYPE a, garray_index position, DATA_TYPE *default_value) { \
     return ___garray_at_default(a, position, default_value);                   \
   }                                                                            \
                                                                                \
@@ -366,7 +364,7 @@ typedef struct generic_array_iterator *garray_iter;
     ___garray_iter_previous((garray_iter)iterator);                            \
   }                                                                            \
                                                                                \
-  extern inline DATA_TYPE const *garray_##DATA_TYPE##_iter_get(                \
+  extern inline DATA_TYPE *garray_##DATA_TYPE##_iter_get(                      \
       garray_##DATA_TYPE##_iter iterator) {                                    \
     return ___garray_iter_get((garray_iter)iterator);                          \
   }                                                                            \
@@ -400,7 +398,7 @@ typedef struct generic_array_iterator *garray_iter;
                            (bool (*)(void const *, void *))condition);         \
   }                                                                            \
                                                                                \
-  extern inline DATA_TYPE const *garray_##DATA_TYPE##_get(                     \
+  extern inline DATA_TYPE *garray_##DATA_TYPE##_get(                           \
       garray_##DATA_TYPE a, void *data,                                        \
       bool condition(DATA_TYPE const *value, void *data)) {                    \
     return ___garray_get(a, data, (bool (*)(void const *, void *))condition);  \

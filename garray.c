@@ -160,7 +160,7 @@ get_next_free(garray a)
 }
 
 garray_index
-___garray_add(garray a, const void* data)
+___garray_add(garray a, void* data)
 {
     garray_index pos = get_next_free(a);
 
@@ -171,7 +171,7 @@ ___garray_add(garray a, const void* data)
     return pos;
 }
 
-const void*
+void*
 ___garray_at(garray a, garray_index position)
 {
     if (position * a->element_size >= a->bytes_allocated) {
@@ -187,8 +187,8 @@ ___garray_at(garray a, garray_index position)
     return get_element(a, position);
 }
 
-const void*
-___garray_at_default(garray a, garray_index position, const void* default_value)
+void*
+___garray_at_default(garray a, garray_index position, void* default_value)
 {
     if (position * a->element_size >= a->bytes_allocated)
         return default_value;
@@ -386,7 +386,7 @@ ___garray_iter_previous(garray_iter iterator)
     iterator->valid_index = false;
 }
 
-void const*
+void*
 ___garray_iter_get(garray_iter iterator)
 {
     return get_element(iterator->garray, iterator->index);
@@ -419,7 +419,7 @@ ___garray_iter_set_index(garray_iter iterator, garray_index index)
 }
 
 bool
-___garray_contains(garray a, const void* value,
+___garray_contains(garray a, void const* value,
                    bool comparator(void const* left, void const* right))
 {
     garray_iter iter;
@@ -441,7 +441,7 @@ ___garray_query(
     bool condition(void const* value, void* data))
 {
     garray new_a = ___garray_new(a->element_size);
-    void const* current = NULL;
+    void* current = NULL;
 
     for (garray_iter it = ___garray_iter_new(a); ___garray_iter_condition_free(it);
          ___garray_iter_next(it)) {
@@ -454,11 +454,11 @@ ___garray_query(
     return new_a;
 }
 
-void const*
+void*
 ___garray_get(garray a, void* data, bool condition(void const* value,
                                                    void* data))
 {
-    void const* current = NULL;
+    void* current = NULL;
     garray_iter it;
 
     for (it = ___garray_iter_new(a); ___garray_iter_condition(it);

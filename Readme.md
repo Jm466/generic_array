@@ -75,28 +75,28 @@ Appends an element to the array
 ---
 
 ```c
-TYPE const *garray_TYPE_at(garray_TYPE a, garray_index position);
+TYPE *garray_TYPE_at(garray_TYPE a, garray_index position);
 ```
 
-Returns an unmodifiable pointer to the value at `position`.
+Returns a pointer to the value at `position`.
 Aborts the program if `position` its outside of bounds or the value is uset.
 
 ---
 
 ```c
-TYPE const *garray_TYPE_at_default(garray_TYPE a, garray_index position, TYPE const *default_value);
+TYPE *garray_TYPE_at_default(garray_TYPE a, garray_index position, TYPE *default_value);
 ```
 
-Returns an unmodifiable pointer to the value at `position`.
+Returns a pointer to the value at `position`.
 Returns `default` if if `position` its outside of bounds or the value is unset.
 
 ---
 
 ```c
-TYPE const *garray_TYPE_get(garray_TYPE a, void *data, bool condition(TYPE const _value, void_ data))
+TYPE *garray_TYPE_get(garray_TYPE a, void *data, bool condition(TYPE const _value, void_ data))
 ```
 
-Returns an unmodifiable pointer to the first value that matches `condition`, `NULL` if none matches.
+Returns a pointer to the first value that matches `condition`, `NULL` if none matches.
 `data` This value will be passed to condition each time its called
 
 ---
@@ -192,7 +192,8 @@ Iterators allow you to iterate easily over the array
 > function that alters the number of elements or its positions in the
 > array(like `garray_TYPE_set()` when called with a position that would require
 > the array to expand), can get the iterator into an inconsistent state that
-> could lead to a crash
+> could lead to a crash; that is, the iterator becomes invalid after calling any
+> of the functions mentioned above and should be freed.
 
 ---
 
