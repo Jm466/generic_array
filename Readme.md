@@ -186,6 +186,7 @@ garray_TYPE_iter garray_TYPE_iter_new(garray_TYPE a);
 
 Returns a new iterator for the array
 Iterators allow you to iterate easily over the array
+When created, the itarator will point to the first available value, if there is one
 
 > **_IMPORTANT:_** After creating a new iterator, modifiying the structure of the
 > array by calling `garray_TYPE_collapse()`, `garray_TYPE_sort()` or any other

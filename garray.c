@@ -310,6 +310,7 @@ ___garray_free(garray a)
     free(a);
 }
 
+void ___garray_iter_next(garray_iter iterator);
 garray_iter
 ___garray_iter_new(garray a)
 {
@@ -323,8 +324,10 @@ ___garray_iter_new(garray a)
 
     new_iter->garray = a;
     new_iter->index = 0;
-    new_iter->valid_index = a->array == NULL ? false : GARRAY_GET_VALUE_SETTED(a,
-                                                                               0);
+    new_iter->valid_index = a->array == NULL ? false : GARRAY_GET_VALUE_SETTED(a, 0);
+
+    if (!new_iter->valid_index)
+        ___garray_iter_next(new_iter);
 
     return new_iter;
 }
@@ -366,6 +369,7 @@ ___garray_iter_next(garray_iter iterator)
         }
     }
 
+    iterator->index--;
     iterator->valid_index = false;
 }
 
