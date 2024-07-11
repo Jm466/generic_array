@@ -123,8 +123,9 @@ typedef unsigned int garray_index;
  *
  * Returns a new iterator for the array
  * Iterators allow you to iterate easily over the array
- * Note that, after creating a new iterator, modifiying the structure of the
- * array by calling garray_TYPE_collapse(), garray_TYPE_sort() or any other
+ * When created, the itarator will point to the first available value, if there
+ * is one Note that, after creating a new iterator, modifiying the structure of
+ * the array by calling garray_TYPE_collapse(), garray_TYPE_sort() or any other
  * function that alters the number of elements or its positions in the
  * array(like garray_TYPE_set() when called with a position that would require
  * the array to expand), can get the iterator into an inconsistent state that
